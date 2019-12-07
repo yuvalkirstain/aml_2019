@@ -11,8 +11,8 @@ def plot_network(graph, classes_disp):
             E.append((k, i))
 
     labels = dict()
-    for i in V: labels[i] = \
-        classes_disp[i]
+    for i in V:
+        labels[i] = classes_disp[i]
 
     for v in V:
         G.add_node(labels[i])
