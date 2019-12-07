@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <graph edgedefault="undirected">
+    <node id="Chokecherry" />
+    <node id="Airplane" />
+    <node id="Airline" />
+    <node id="Bangle" />
+    <node id="Flora" />
+    <node id="Trijet" />
+    <node id="Airport apron" />
+    <node id="Boeing" />
+    <node id="Aviation" />
+    <node id="Airbus" />
+    <node id="Boeing 767" />
+    <node id="Boeing 777" />
+    <node id="Atmosphere of earth" />
+    <node id="Airbus a330" />
+    <node id="Airbus a320 family" />
+    <node id="Jet aircraft" />
+    <node id="Aerospace engineering" />
+    <node id="Boeing 757" />
+    <node id="Narrow-body aircraft" />
+    <node id="Takeoff" />
+    <node id="Mcdonnell douglas dc-10" />
+    <node id="Airliner" />
+    <node id="Wide-body aircraft" />
+    <node id="Vehicle" />
+    <node id="Air travel" />
+    <node id="Aircraft" />
+    <node id="Fashion accessory" />
+    <node id="Gold" />
+    <node id="Jewellery" />
+    <node id="Bling-bling" />
+    <node id="Plant" />
+    <node id="Tree" />
+    <node id="Food" />
+    <node id="Malpighia" />
+    <node id="Branch" />
+    <node id="Produce" />
+    <node id="Fruit" />
+    <node id="Land plant" />
+    <node id="Woody plant" />
+    <node id="Leaf" />
+    <node id="Flower" />
+    <node id="Chinese hawthorn" />
+    <node id="Flowering plant" />
+    <node id="Shrub" />
+    <node id="Acerola" />
+    <node id="Berry" />
+    <node id="Evergreen" />
+    <node id="Rowan" />
+    <node id="Blossom" />
+    <edge source="Chokecherry" target="Food" />
+    <edge source="Chokecherry" target="Blossom" />
+    <edge source="Airplane" target="Airline" />
+    <edge source="Airplane" target="Bangle" />
+    <edge source="Airplane" target="Flora" />
+    <edge source="Airplane" target="Mcdonnell douglas dc-10" />
+    <edge source="Bangle" target="Fashion accessory" />
+    <edge source="Flora" target="Plant" />
+    <edge source="Flora" target="Rowan" />
+    <edge source="Trijet" target="Airport apron" />
+    <edge source="Trijet" target="Boeing" />
+    <edge source="Trijet" target="Aviation" />
+    <edge source="Trijet" target="Airbus" />
+    <edge source="Trijet" target="Boeing 767" />
+    <edge source="Trijet" target="Boeing 777" />
+    <edge source="Trijet" target="Atmosphere of earth" />
+    <edge source="Trijet" target="Airbus a330" />
+    <edge source="Trijet" target="Airbus a320 family" />
+    <edge source="Trijet" target="Jet aircraft" />
+    <edge source="Trijet" target="Aerospace engineering" />
+    <edge source="Trijet" target="Boeing 757" />
+    <edge source="Trijet" target="Narrow-body aircraft" />
+    <edge source="Trijet" target="Takeoff" />
+    <edge source="Trijet" target="Mcdonnell douglas dc-10" />
+    <edge source="Mcdonnell douglas dc-10" target="Airliner" />
+    <edge source="Mcdonnell douglas dc-10" target="Wide-body aircraft" />
+    <edge source="Mcdonnell douglas dc-10" target="Vehicle" />
+    <edge source="Mcdonnell douglas dc-10" target="Air travel" />
+    <edge source="Mcdonnell douglas dc-10" target="Aircraft" />
+    <edge source="Fashion accessory" target="Gold" />
+    <edge source="Gold" target="Jewellery" />
+    <edge source="Gold" target="Gold" />
+    <edge source="Gold" target="Bling-bling" />
+    <edge source="Plant" target="Tree" />
+    <edge source="Plant" target="Food" />
+    <edge source="Plant" target="Malpighia" />
+    <edge source="Plant" target="Branch" />
+    <edge source="Plant" target="Produce" />
+    <edge source="Plant" target="Fruit" />
+    <edge source="Plant" target="Land plant" />
+    <edge source="Plant" target="Woody plant" />
+    <edge source="Plant" target="Leaf" />
+    <edge source="Plant" target="Flower" />
+    <edge source="Plant" target="Chinese hawthorn" />
+    <edge source="Plant" target="Flowering plant" />
+    <edge source="Food" target="Shrub" />
+    <edge source="Food" target="Acerola" />
+    <edge source="Food" target="Berry" />
+    <edge source="Food" target="Evergreen" />
+  </graph>
+</graphml>
