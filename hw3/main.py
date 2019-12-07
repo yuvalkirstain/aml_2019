@@ -19,47 +19,50 @@ from collections import Counter, defaultdict
 np.set_printoptions(precision=4)
 pd.set_option('precision', 2)
 
-def get_counts(image_to_labels):
-    single_appear_mat, couple_appear_mat = defaultdict(int), defaultdict(int)
+
+def get_probs(image_to_labels):
+    is_in_prob, both_in_prob = defaultdict(int), defaultdict(int)
+    num_samples = len(image_to_labels)
+    class_id2ind = dict()
+    num_classes = 0
     for labels in image_to_labels.values():
         for label in labels:
-            single_appear_mat[label] += 1
-        for l1, l2 in permutations(labels, 2):
-            couple_appear_mat[(l1, l2)] += 1
-    return single_appear_mat, couple_appear_mat
+            if label not in class_id2ind:
+                class_id2ind[label] = num_classes
+                num_classes += 1
+            is_in_prob[class_id2ind[label]] += 1 / num_samples
+        for l1, l2 in combinations(labels, 2):
+            ind1 = min(class_id2ind[l1], class_id2ind[l2])
+            ind2 = max(class_id2ind[l1], class_id2ind[l2])
+            both_in_prob[(ind1, ind2)] += 1 / num_samples
+
+    one_in_one_out_prob = defaultdict(int)
+    both_out_prob = defaultdict(int)
+    for ind1, ind2 in combinations(range(num_classes), 2):
+        one_in_one_out_prob[(ind1, ind2)] = is_in_prob[ind1] - both_in_prob[(ind1, ind2)]
+        one_in_one_out_prob[(ind2, ind1)] = is_in_prob[ind2] - both_in_prob[(ind1, ind2)]
+        both_out_prob[(ind1, ind2)] = 1 - (is_in_prob[ind1] + is_in_prob[ind2] - both_in_prob[(ind1, ind2)])
+
+    return is_in_prob, both_out_prob, one_in_one_out_prob, both_in_prob, class_id2ind
+
 
 def get_single_mutual_info(mutual, s1, s2):
     if mutual == 0:
         return 0
-    return  mutual * np.log(mutual / (s1 * s2))
+    return mutual * np.log(mutual / (s1 * s2))
 
 
-def get_mutual_info(single_counter, couple_counter, num_samples):
-    # calculate all the appearances
-    one_and_other_not_counter = defaultdict(int)
-    for key1, key2 in permutations(single_counter.keys(), 2):
-        one_and_other_not_counter[(key1, key2)] = single_counter[key1] - couple_counter[(key1, key2)]
-
-    none_counter = defaultdict(int)
-    for key1, key2 in permutations(single_counter.keys(), 2):
-        none_counter[(key1, key2)] = num_samples - (single_counter[key1] + single_counter[key2] - couple_counter[(key1, key2)])
-
-
-    # calculate the probabilities
-    single_prob = {key : value / num_samples for key, value in single_counter.items()}
-    final_prob = defaultdict(int)
-    for key1, key2 in permutations(single_counter.keys(), 2):
-        final_prob[(key1, key2)] = [(none_counter[(key1, key2)] / num_samples, 1 - single_prob[key1], 1 - single_prob[key2]),
-                                    (one_and_other_not_counter[(key1, key2)] / num_samples, single_prob[key1], 1 - single_prob[key2]),
-                                    (one_and_other_not_counter[(key2, key1)] / num_samples, single_prob[key2], 1 - single_prob[key1]),
-                                    (couple_counter[(key1, key2)] / num_samples, single_prob[key1], single_prob[key2])]
-
-    # get mutual info
-    mutual_info = defaultdict(int)
-    for key, data in final_prob.items():
-        for mutual, s1, s2 in data:
-            mutual_info[key] += get_single_mutual_info(mutual, s1, s2)
-
+def get_mutual_info(is_in_prob, both_out_prob, one_in_one_out_prob, both_in_prob, class_id2ind):
+    num_classes = len(is_in_prob)
+    mutual_info = np.zeros((len(class_id2ind), len(class_id2ind)))
+    for ind1, ind2 in combinations(range(num_classes), 2):
+        c_00 = get_single_mutual_info(both_out_prob[(ind1, ind2)], 1 - is_in_prob[ind1], 1 - is_in_prob[ind2])
+        c_10 = get_single_mutual_info(one_in_one_out_prob[(ind1, ind2)], is_in_prob[ind1], 1 - is_in_prob[ind2])
+        c_01 = get_single_mutual_info(one_in_one_out_prob[(ind2, ind1)], is_in_prob[ind2], 1 - is_in_prob[ind1])
+        c_11 = get_single_mutual_info(both_in_prob[(ind1, ind2)], is_in_prob[ind1], is_in_prob[ind2])
+        summ = c_00 + c_01 + c_10 + c_11
+        mutual_info[ind1, ind2] = summ
+        mutual_info[ind2, ind1] = summ
     return mutual_info
 
 def main():
@@ -73,26 +76,19 @@ def main():
     #####################
     # ADD YOUR CODE HERE#
     #####################
-    annotations = pd.read_csv(oid_data) # todo comment
+    annotations = pd.read_csv(oid_data)
+    image_to_labels = defaultdict(list)
+    for _, row in annotations.iterrows():
+        image_to_labels[row['ImageID']].append(row['LabelName'])
 
-    image_to_labels = util.fast_image_to_labels(annotations)
-    num_samples = len(image_to_labels.keys())
+    # get Pd
+    is_in_prob, both_out_prob, one_in_one_out_prob, both_in_prob, class_id2ind = get_probs(image_to_labels)
 
-    single_counter, couple_counter = get_counts(image_to_labels)
+    # get mutual info for edges
+    mutual_info = get_mutual_info(is_in_prob, both_out_prob, one_in_one_out_prob, both_in_prob, class_id2ind)
 
-    # turn into mutual information
-    mutual_info = get_mutual_info(single_counter, couple_counter, num_samples)
-
-
-    class_id_to_ind = {class_id: ind for ind, class_id in enumerate(single_counter.keys())}
-    ind_to_class_id = {ind: class_id for class_id, ind in class_id_to_ind.items()}
-    weights_mat = np.zeros((len(single_counter), len(single_counter)))
-    for key1, key2 in permutations(single_counter, 2):
-        i1 = class_id_to_ind[key1]
-        i2 = class_id_to_ind[key2]
-        weights_mat[i1, i2] = - mutual_info[(key1, key2)] # we want maximum spanning tree
-
-    X = csr_matrix(weights_mat)
+    # get spanning tree
+    X = csr_matrix(- mutual_info)
     Tcsr = minimum_spanning_tree(X).toarray()
     ####################
 
@@ -101,11 +97,11 @@ def main():
     # was before change - chow_liu_tree = dict()
     ################## change ###############
     length = Tcsr.shape[0]
-    chow_liu_tree = {ind_to_class_id[i] : [] for i in range(length)}
-    for i in range(length):
-        for j in range(length):
-            if Tcsr[i, j] < 0:
-                chow_liu_tree[ind_to_class_id[i]].append(ind_to_class_id[j])
+    ind2class_id = {v: k for k, v in class_id2ind.items()}
+    chow_liu_tree = defaultdict(list)
+    for i, j in permutations(range(length), 2):
+        if Tcsr[i, j] < 0:
+            chow_liu_tree[ind2class_id[i]].append(ind2class_id[j])
     vis.plot_network(chow_liu_tree, classes_display_name)
 
 
