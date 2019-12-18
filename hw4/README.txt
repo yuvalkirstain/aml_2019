@@ -1,4 +1,4 @@
-Aviv Bick 205784945 aviv.bick@mail.tau.ac.il
+Aviv Bick 205784945 avivbick@mail.tau.ac.il
 Yuval Kirstain 205534753 kirstain@mail.tau.ac.il
 You can run/see question 1 using the following colab notebooks:
 
